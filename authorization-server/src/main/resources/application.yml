@@ -21,13 +21,40 @@ spring:
   security:
     oauth2:
       authorizationserver:
-        registered-clients:
-          my-client:
-            client-id: my-client-id
-            client-secret: "{noop}my-client-secret"
-            authorization-grant-type: authorization_code
-            redirect-uri: "http://localhost:8081/login/oauth2/code/my-client"
-            scope: read, write
+        issuer-uri:
+          - http://localhost:8080
+
+#  security:
+#    oauth2:
+#      authorizationserver:
+#        client:
+#          public-client:
+#            registration:
+#              client-id: "public-client"
+#              client-authentication-methods:
+#                - "none"
+#              authorization-grant-types:
+#                - "authorization_code"
+#              redirect-uris:
+#                - "http://127.0.0.1:4200"
+#              scopes:
+#                - "openid"
+#                - "profile"
+#            require-authorization-consent: true
+#            require-proof-key: true
+#          registered-clients:
+#            registration:
+#              client-id: "my-client-id"
+#              client-secret: "{noop}my-client-secret"
+#              authorization-grant-types:
+#                - "authorization_code"
+#              redirect-uris:
+#                - "http://localhost:8081/login/oauth2/code/my-client"
+#              scopes:
+#                - "read"
+#                - "write"
+#            require-authorization-consent: true
+#            require-proof-key: true
 
 server:
   port: 8080
@@ -37,3 +64,4 @@ server:
 logging:
   level:
     sql: debug
+

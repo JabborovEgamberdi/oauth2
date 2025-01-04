@@ -1,17 +1,19 @@
-package com.example.resourceserver.config.controller;
+package com.example.resourceserver.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1")
 public class ApiController {
 
-    @GetMapping("/data")
-    public ResponseEntity<String> getData() {
-        return ResponseEntity.ok("Protected Data from Resource Server");
+    @GetMapping("/api/public")
+    public String publicEndpoint() {
+        return "This is a public endpoint.";
+    }
+
+    @GetMapping("/api/private")
+    public String privateEndpoint() {
+        return "This is a protected resource. Access granted!";
     }
 
 }

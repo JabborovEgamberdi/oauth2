@@ -7,7 +7,7 @@ import jakarta.persistence.Id;
 import lombok.Getter;
 
 @Getter
-@Entity
+@Entity(name = "_user")
 public class User {
 
     @Id
