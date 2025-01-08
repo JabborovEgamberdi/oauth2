@@ -64,4 +64,7 @@ server:
 logging:
   level:
     sql: debug
-
+    org:
+      springframework:
+        security:
+          trace
