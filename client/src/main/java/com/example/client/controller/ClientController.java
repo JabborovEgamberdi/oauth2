@@ -22,7 +22,7 @@ public class ClientController {
 
     @GetMapping("/private-data")
     public String getPrivateData(
-            @RegisteredOAuth2AuthorizedClient("auth-server-client") OAuth2AuthorizedClient authorizedClient,
+            @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
             @AuthenticationPrincipal OAuth2User oauth2User,
             Model model
     ) {

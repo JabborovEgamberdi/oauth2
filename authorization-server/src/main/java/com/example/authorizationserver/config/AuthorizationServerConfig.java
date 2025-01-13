@@ -73,8 +73,8 @@ public class AuthorizationServerConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("user")
-                .password(new BCryptPasswordEncoder().encode("password"))
+        UserDetails user = User.withUsername("admin")
+                .password(new BCryptPasswordEncoder().encode("admin"))
                 .roles("USER")
                 .build();
         return new InMemoryUserDetailsManager(user);
@@ -84,16 +84,18 @@ public class AuthorizationServerConfig {
     public RegisteredClientRepository registeredClientRepository() {
         RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client")
-                .clientSecret("secret")
+                .clientSecret("{noop}secret")
                 .clientAuthenticationMethods(authMethods -> {
                     authMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
                 })
                 .authorizationGrantTypes(grantTypes -> {
                     grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
                     grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
+                    grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
                 })
                 .redirectUris(uris -> {
-                    uris.add("http://localhost:8081/login/oauth2/code/");
+//                    uris.add("http://localhost:8081/login/oauth2/code/");
+                    uris.add("spring.io");
                 })
                 .postLogoutRedirectUris(uris -> {
                     uris.add("http://localhost:8081/");
