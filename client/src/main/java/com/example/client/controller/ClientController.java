@@ -35,7 +35,7 @@ public class ClientController {
         );
         model.addAttribute("privateData", privateData);
         model.addAttribute("userName", oauth2User.getName());
-        return "private-data";
+        return privateData;
     }
 
 }

@@ -82,7 +82,8 @@ public class AuthorizationServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+//        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
+        RegisteredClient registeredClient = RegisteredClient.withId("oidc-client")
                 .clientId("client")
                 .clientSecret("{noop}secret")
                 .clientAuthenticationMethods(authMethods -> {
@@ -94,7 +95,7 @@ public class AuthorizationServerConfig {
                     grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
                 })
                 .redirectUris(uris -> {
-//                    uris.add("http://localhost:8081/login/oauth2/code/");
+                    uris.add("http://localhost:8081/login/oauth2/code/oidc-client");
                     uris.add("spring.io");
                 })
                 .postLogoutRedirectUris(uris -> {
