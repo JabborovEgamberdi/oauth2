@@ -9,15 +9,17 @@ spring:
     oauth2:
       client:
         registration:
-          auth-server:
-            client-id: client-id
-            client-secret: client-secret
-            scope: read
+          client:
+            client-id: client
+            client-name: client
+            client-secret: secret
+            scope:
+              - openid
             authorization-grant-type: authorization_code
-            redirect-uri: "http://localhost:8081/login/oauth2/code/"
+            redirect-uri: "http://localhost:8081/login/oauth2/code/client"
         provider:
-          auth-server:
-            authorization-uri: http://localhost:8080/oauth2/authorize
-            token-uri: http://localhost:8080/oauth2/token
-            user-info-uri: http://localhost:8080/userinfo
-            issuer-uri: http://localhost:8080
+          client:
+            authorization-uri: http://localhost:9000/oauth2/authorize
+            token-uri: http://localhost:9000/oauth2/token
+            user-info-uri: http://localhost:9000/userinfo
+            issuer-uri: http://localhost:9000

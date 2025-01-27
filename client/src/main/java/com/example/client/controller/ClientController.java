@@ -13,7 +13,7 @@ import org.springframework.web.client.RestTemplate;
 @Controller
 public class ClientController {
 
-    private final static String resourceServerUrl = "http://localhost:8000";
+    private final static String resourceServerUrl = "http://localhost:8080";
 
     @GetMapping("/")
     public String index() {

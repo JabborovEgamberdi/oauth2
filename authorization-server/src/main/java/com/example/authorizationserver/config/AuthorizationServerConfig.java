@@ -39,8 +39,8 @@ import java.security.interfaces.RSAPrivateKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.UUID;
 
-@EnableWebSecurity
 @Configuration
+@EnableWebSecurity
 public class AuthorizationServerConfig {
 
     @Bean
@@ -68,46 +68,58 @@ public class AuthorizationServerConfig {
                 .authorizeHttpRequests(authorize ->
                         authorize.anyRequest().authenticated())
                 .formLogin(Customizer.withDefaults());
-        return http.build();
+        return http
+                .csrf(Customizer.withDefaults())
+                .cors(Customizer.withDefaults())
+                .build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withUsername("admin")
+        UserDetails admin = User.withUsername("admin")
                 .password(new BCryptPasswordEncoder().encode("admin"))
+                .roles("ADMIN")
+                .build();
+        UserDetails manager = User.withUsername("manager")
+                .password(new BCryptPasswordEncoder().encode("manager"))
+                .roles("MANAGER")
+                .build();
+        UserDetails user = User.withUsername("user")
+                .password(new BCryptPasswordEncoder().encode("user"))
                 .roles("USER")
                 .build();
-        return new InMemoryUserDetailsManager(user);
+        return new InMemoryUserDetailsManager(admin, manager, user);
     }
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-//        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
-        RegisteredClient registeredClient = RegisteredClient.withId("oidc-client")
+        RegisteredClient registeredClient = RegisteredClient.withId(UUID.randomUUID().toString())
                 .clientId("client")
-                .clientSecret("{noop}secret")
-                .clientAuthenticationMethods(authMethods -> {
-                    authMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC);
-                })
+                .clientSecret("secret")
+                .clientAuthenticationMethods(authMethods ->
+                        authMethods.add(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
+                )
                 .authorizationGrantTypes(grantTypes -> {
                     grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
                     grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
                     grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
                 })
                 .redirectUris(uris -> {
-                    uris.add("http://localhost:8081/login/oauth2/code/oidc-client");
+                    uris.add("http://127.0.0.1:8081/login/oauth2/code/client");
+                    uris.add("http://localhost:8081/login/oauth2/code/client");
                     uris.add("spring.io");
                 })
-                .postLogoutRedirectUris(uris -> {
-                    uris.add("http://localhost:8081/");
-                })
+                .postLogoutRedirectUris(uris -> uris.add("http://127.0.0.1:8081"))
                 .scopes(scopes -> {
                     scopes.add(OidcScopes.OPENID);
                     scopes.add(OidcScopes.PROFILE);
                     scopes.add("user.READ");
                     scopes.add("user.WRITE");
                 })
-                .clientSettings(ClientSettings.builder().requireAuthorizationConsent(true).build())
+                .clientSettings(ClientSettings.builder()
+                        .requireAuthorizationConsent(true)
+                        .requireProofKey(false)
+                        .build())
                 .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
     }
@@ -131,8 +143,7 @@ public class AuthorizationServerConfig {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
             keyPairGenerator.initialize(2048);
             keyPair = keyPairGenerator.generateKeyPair();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             throw new IllegalStateException(ex);
         }
         return keyPair;
