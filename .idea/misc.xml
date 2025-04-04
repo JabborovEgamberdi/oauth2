@@ -10,12 +10,18 @@
         <option value="$PROJECT_DIR$/resource-server/pom.xml" />
         <option value="$PROJECT_DIR$/../auth-server/auth-server/pom.xml" />
         <option value="$PROJECT_DIR$/auth-server/pom.xml" />
+        <option value="$PROJECT_DIR$/authorization-server2/pom.xml" />
+        <option value="$PROJECT_DIR$/resource-server2/pom.xml" />
+        <option value="$PROJECT_DIR$/client2/pom.xml" />
       </list>
     </option>
     <option name="ignoredFiles">
       <set>
         <option value="$PROJECT_DIR$/../auth-server/auth-server/pom.xml" />
         <option value="$PROJECT_DIR$/auth-server/pom.xml" />
+        <option value="$PROJECT_DIR$/authorization-server2/pom.xml" />
+        <option value="$PROJECT_DIR$/client2/pom.xml" />
+        <option value="$PROJECT_DIR$/resource-server2/pom.xml" />
       </set>
     </option>
   </component>

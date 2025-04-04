@@ -9,10 +9,11 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          keySetURI: http://localhost:9000/oauth2/jwks
+          issuer-uri: http://localhost:9000
 
 logging:
   level:
     org:
       springframework:
-        security: trace
+        security:
+          oauth2: trace
