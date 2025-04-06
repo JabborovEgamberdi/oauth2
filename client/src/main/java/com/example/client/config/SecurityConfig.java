@@ -2,21 +2,14 @@ package com.example.client.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
-import org.springframework.security.oauth2.client.registration.InMemoryClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizationRequestResolver;
-import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestCustomizers;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
-import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
-import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
-import org.springframework.security.oauth2.core.oidc.OidcScopes;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 
 import static org.springframework.security.config.Customizer.withDefaults;
@@ -43,7 +36,8 @@ public class SecurityConfig {
 //                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
 //                .clientAuthenticationMethod(ClientAuthenticationMethod.CLIENT_SECRET_BASIC)
 //                .redirectUri("http://localhost:9000/login/oauth2/code/auth-server")
-////                .tokenUri("http://localhost:9000/oauth2/token")
+
+    /// /                .tokenUri("http://localhost:9000/oauth2/token")
 //                .scope(OidcScopes.OPENID)
 //                .build();
 //        return new InMemoryClientRegistrationRepository(client1);
@@ -63,7 +57,6 @@ public class SecurityConfig {
 //        clientManager.setAuthorizedClientProvider(provider);
 //        return clientManager;
 //    }
-
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, ClientRegistrationRepository clientRegistrationRepository) throws Exception {
         String baseUri = OAuth2AuthorizationRequestRedirectFilter.DEFAULT_AUTHORIZATION_REQUEST_BASE_URI;
@@ -77,7 +70,7 @@ public class SecurityConfig {
                         .authenticated()
                 )
                 .oauth2Login(oauth2Login -> {
-                    oauth2Login.loginPage("/oauth2/authorization/auth-server");
+                    oauth2Login.loginPage("/oauth2/authorization/oidc-client");
                     oauth2Login.authorizationEndpoint(authorizationEndpoint ->
                             authorizationEndpoint.authorizationRequestResolver(resolver)
                     );

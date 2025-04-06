@@ -1,8 +1,6 @@
 package com.example.authorizationserver.config;
 
-import com.nimbusds.jose.JWSAlgorithm;
 import com.nimbusds.jose.jwk.JWKSet;
-import com.nimbusds.jose.jwk.KeyUse;
 import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
@@ -18,7 +16,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
-import org.springframework.security.oauth2.core.ClientAuthenticationMethod;
 import org.springframework.security.oauth2.core.oidc.OidcScopes;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.server.authorization.client.InMemoryRegisteredClientRepository;
@@ -41,6 +38,7 @@ import java.util.UUID;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 import static org.springframework.security.oauth2.core.ClientAuthenticationMethod.CLIENT_SECRET_BASIC;
+import static org.springframework.security.oauth2.server.authorization.config.annotation.web.configurers.OAuth2AuthorizationServerConfigurer.authorizationServer;
 
 @Configuration
 @EnableWebSecurity
@@ -56,27 +54,24 @@ public class AuthorizationServerConfig {
     @Order(1)
     public SecurityFilterChain authorizationServerSecurityFilterChain(HttpSecurity http)
             throws Exception {
-        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer =
-                OAuth2AuthorizationServerConfigurer.authorizationServer();
+        OAuth2AuthorizationServerConfigurer authorizationServerConfigurer = authorizationServer();
+
         http
                 .securityMatcher(authorizationServerConfigurer.getEndpointsMatcher())
                 .with(authorizationServerConfigurer, authorizationServer ->
-                        authorizationServer
-                                .oidc(Customizer.withDefaults())
+                        authorizationServer.oidc(Customizer.withDefaults())
                 )
                 .authorizeHttpRequests(authorize ->
-                        authorize
-                                .anyRequest()
-                                .authenticated()
+                        authorize.anyRequest().authenticated()
+                )
+                .oauth2ResourceServer(resourceServer ->
+                        resourceServer.jwt(withDefaults())
                 )
                 .exceptionHandling(exception -> exception
                         .defaultAuthenticationEntryPointFor(
                                 new LoginUrlAuthenticationEntryPoint("/login"),
                                 new MediaTypeRequestMatcher(MediaType.TEXT_HTML)
                         )
-                )
-                .oauth2ResourceServer(httpSecurityOAuth2ResourceServerConfigurer ->
-                        httpSecurityOAuth2ResourceServerConfigurer.jwt(withDefaults())
                 );
         return http.build();
     }
@@ -109,22 +104,27 @@ public class AuthorizationServerConfig {
 
     @Bean
     public RegisteredClientRepository registeredClientRepository() {
-        RegisteredClient registeredClient = RegisteredClient.withId("auth-server")
+        RegisteredClient registeredClient = RegisteredClient.withId("oidc-client")
                 .clientId("client")
                 .clientSecret("{noop}secret")
                 .clientAuthenticationMethod(CLIENT_SECRET_BASIC)
                 .authorizationGrantTypes(grantTypes -> {
                     grantTypes.add(AuthorizationGrantType.AUTHORIZATION_CODE);
                     grantTypes.add(AuthorizationGrantType.REFRESH_TOKEN);
+//                    grantTypes.add(AuthorizationGrantType.CLIENT_CREDENTIALS);
                 })
-                .redirectUris(uris -> uris.add("http://localhost:8081/login/oauth2/code/auth-server"))
-                .postLogoutRedirectUris(uris -> uris.add("http://localhost:8081"))
                 .scopes(scopes -> {
                     scopes.add(OidcScopes.OPENID);
                     scopes.add(OidcScopes.PROFILE);
                     scopes.add("read");
                     scopes.add("write");
                 })
+                .redirectUri("http://localhost:8081/login/oauth2/code/oidc-client")
+//                .redirectUris(uris -> {
+//                    uris.add("http://localhost:8081/login/oauth2/code/oidc-client");
+//                    uris.add("http://localhost:8081/authorized");
+//                })
+//                .postLogoutRedirectUris(uris -> uris.add("http://localhost:8081"))
                 .clientSettings(clientSettings())
                 .build();
         return new InMemoryRegisteredClientRepository(registeredClient);
@@ -134,7 +134,7 @@ public class AuthorizationServerConfig {
     public ClientSettings clientSettings() {
         return ClientSettings.builder()
                 .requireAuthorizationConsent(true)  // Display post-login authorization consent screen
-                .requireProofKey(true)              // flag to enable Proof Key for Code Exchange (PKCE)
+//                .requireProofKey(true)              // flag to enable Proof Key for Code Exchange (PKCE)
                 .build();
     }
 
@@ -172,15 +172,5 @@ public class AuthorizationServerConfig {
     public JwtDecoder jwtDecoder(JWKSource<SecurityContext> jwkSource) {
         return OAuth2AuthorizationServerConfiguration.jwtDecoder(jwkSource);
     }
-
-//    @Bean
-//    public JWKSet jwkSet() {
-//        RSAKey rsaKey = new RSAKey.Builder(rsaKeyProperties.publicKey())
-//                .keyUse(KeyUse.SIGNATURE)
-//                .algorithm(JWSAlgorithm.RS256)
-//                .keyID(UUID.randomUUID().toString())
-//                .build();
-//        return new JWKSet(rsaKey);
-//    }
 
 }
