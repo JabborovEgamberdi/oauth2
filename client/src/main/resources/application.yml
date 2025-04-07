@@ -14,13 +14,13 @@ spring:
             client-id: client
             client-name: oidc-client
             client-secret: secret
+            authorization-grant-type: authorization_code
             scope:
               - openid
               - profile
               - read
               - write
-            authorization-grant-type: authorization_code
-            redirect-uri: http://localhost:8081/login/oauth2/code/oidc-client
+            redirect-uri: http://127.0.0.1:8081/login/oauth2/code/oidc-client
 #            client-authentication-method:
 #              - client_secret_basic
         provider:

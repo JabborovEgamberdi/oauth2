@@ -10,11 +10,13 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @Controller
 @RestController
+@RequestMapping("/")
 public class ClientController {
 
     private final static String resourceServerUrl = "http://localhost:8080";
@@ -82,7 +84,7 @@ public class ClientController {
 
     @GetMapping("/login")
     public String login() {
-        return "redirect:/oauth2/authorization/auth-server";
+        return "redirect:/oauth2/authorization/oidc-client";
     }
 
 
